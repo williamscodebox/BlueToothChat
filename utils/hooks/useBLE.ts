@@ -1,11 +1,12 @@
 /* eslint-disable no-bitwise */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
 import {
   BleError,
   BleManager,
   Characteristic,
   Device,
+  Subscription,
 } from "react-native-ble-plx";
 
 import * as ExpoDevice from "expo-device";
@@ -14,6 +15,10 @@ import base64 from "react-native-base64";
 
 const HEART_RATE_UUID = "0000180d-0000-1000-8000-00805f9b34fb";
 const HEART_RATE_CHARACTERISTIC = "00002a37-0000-1000-8000-00805f9b34fb";
+
+// Replace with your device’s service/characteristic UUIDs
+const CUSTOM_SERVICE_UUID = "000018f0-0000-1000-8000-00805f9b34fb";
+const CUSTOM_CHARACTERISTIC_UUID = "00002af0-0000-1000-8000-00805f9b34fb";
 
 interface BluetoothLowEnergyApi {
   requestPermissions(): Promise<boolean>;
@@ -30,6 +35,13 @@ function useBLE(): BluetoothLowEnergyApi {
   const [allDevices, setAllDevices] = useState<Device[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
   const [heartRate, setHeartRate] = useState<number>(0);
+  const subscriptionRef = useRef<Subscription | null>(null);
+
+  useEffect(() => {
+    return () => {
+      bleManager.destroy();
+    };
+  }, []);
 
   const requestAndroid31Permissions = async () => {
     const bluetoothScanPermission = await PermissionsAndroid.request(
@@ -112,9 +124,28 @@ function useBLE(): BluetoothLowEnergyApi {
     try {
       const deviceConnection = await bleManager.connectToDevice(device.id);
       setConnectedDevice(deviceConnection);
+
+      // Discover services and characteristics
       await deviceConnection.discoverAllServicesAndCharacteristics();
+
+      // 🔍 Add this block to inspect what the device exposes
+      const services = await deviceConnection.services();
+      console.log("Services:", services);
+
+      for (const service of services) {
+        const characteristics =
+          await deviceConnection.characteristicsForService(service.uuid);
+        console.log(
+          `Characteristics for service ${service.uuid}:`,
+          characteristics
+        );
+      }
+
       bleManager.stopDeviceScan();
+
+      // Once you know the correct UUIDs, then start streaming
       startStreamingData(deviceConnection);
+      console.log("CONNECTED TO DEVICE:", deviceConnection);
     } catch (e) {
       console.log("FAILED TO CONNECT", e);
     }
@@ -122,6 +153,10 @@ function useBLE(): BluetoothLowEnergyApi {
 
   const disconnectFromDevice = () => {
     if (connectedDevice) {
+      // Remove subscription first
+      subscriptionRef.current?.remove();
+      subscriptionRef.current = null;
+
       bleManager.cancelDeviceConnection(connectedDevice.id);
       setConnectedDevice(null);
       setHeartRate(0);
@@ -133,13 +168,20 @@ function useBLE(): BluetoothLowEnergyApi {
     characteristic: Characteristic | null
   ) => {
     if (error) {
-      console.log(error);
+      console.log("Monitor error:", error);
       return -1;
     } else if (!characteristic?.value) {
       console.log("No Data was recieved");
       return -1;
     }
+    console.log("Raw value (base64):", characteristic.value);
 
+    // Decode base64 into bytes
+    const raw = base64.decode(characteristic.value);
+    const buffer = Uint8Array.from(raw, (c) => c.charCodeAt(0));
+    console.log("Decoded bytes:", buffer);
+
+    // Decode base64 into bytes
     const rawData = base64.decode(characteristic.value);
     let innerHeartRate: number = -1;
 
@@ -158,11 +200,17 @@ function useBLE(): BluetoothLowEnergyApi {
 
   const startStreamingData = async (device: Device) => {
     if (device) {
-      device.monitorCharacteristicForService(
-        HEART_RATE_UUID,
-        HEART_RATE_CHARACTERISTIC,
+      const subscription = device.monitorCharacteristicForService(
+        // HEART_RATE_UUID,
+        // HEART_RATE_CHARACTERISTIC,
+        CUSTOM_SERVICE_UUID,
+        CUSTOM_CHARACTERISTIC_UUID,
+
         onHeartRateUpdate
       );
+
+      // Keep subscription so you can remove it later
+      subscriptionRef.current = subscription; // store it
     } else {
       console.log("No Device Connected");
     }
