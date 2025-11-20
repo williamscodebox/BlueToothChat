@@ -10,8 +10,8 @@ import { Canvas, Circle, Image, useImage } from "@shopify/react-native-skia";
 import { View } from "react-native";
 
 export const PulseIndicator = () => {
-  const expo = useImage(require("./img/expo.png"));
-  const heart = useImage(require("./img/heart.png"));
+  const expo = useImage(require("../img/expo.png"));
+  const heart = useImage(require("../img/heart.png"));
 
   const interval = 1250;
 
