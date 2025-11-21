@@ -35,6 +35,8 @@ function useBLE(): BluetoothLowEnergyApi {
   const [allDevices, setAllDevices] = useState<Device[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
   const [heartRate, setHeartRate] = useState<number>(0);
+  const [systolic, setSystolic] = useState<number>(0);
+  const [diastolic, setDiastolic] = useState<number>(0);
   const subscriptionRef = useRef<Subscription | null>(null);
 
   useEffect(() => {
