@@ -28,6 +28,8 @@ interface BluetoothLowEnergyApi {
   connectedDevice: Device | null;
   allDevices: Device[];
   heartRate: number;
+  systolic: number;
+  diastolic: number;
 }
 
 function useBLE(): BluetoothLowEnergyApi {
@@ -203,7 +205,9 @@ function useBLE(): BluetoothLowEnergyApi {
         Number(rawData[2].charCodeAt(2));
     }
 
-    setHeartRate(innerHeartRate);
+    setHeartRate(buffer[10]);
+    setSystolic(buffer[6]);
+    setDiastolic(buffer[8]);
   };
 
   const startStreamingData = async (device: Device) => {
@@ -232,6 +236,8 @@ function useBLE(): BluetoothLowEnergyApi {
     connectedDevice,
     disconnectFromDevice,
     heartRate,
+    systolic,
+    diastolic,
   };
 }
 

@@ -13,6 +13,8 @@ export default function Index() {
     connectToDevice,
     connectedDevice,
     heartRate,
+    systolic,
+    diastolic,
     disconnectFromDevice,
   } = useBLE();
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -42,13 +44,13 @@ export default function Index() {
               <Text style={styles.heartRateTitleText}>
                 Your Systolic Pressure Is:
               </Text>
-              <Text style={styles.heartRateText}>{heartRate} mmHg</Text>
+              <Text style={styles.heartRateText}>{systolic} mmHg</Text>
             </View>
             <View>
               <Text style={styles.heartRateTitleText}>
                 Your Diastolic Pressure Is:
               </Text>
-              <Text style={styles.heartRateText}>{heartRate} mmHg</Text>
+              <Text style={styles.heartRateText}>{diastolic} mmHg</Text>
             </View>
             <View>
               <Text style={styles.heartRateTitleText}>Your Heart Rate Is:</Text>
