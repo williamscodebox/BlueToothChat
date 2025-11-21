@@ -40,21 +40,55 @@ export default function Index() {
         {connectedDevice ? (
           <>
             <PulseIndicator />
-            <View>
+            {heartRate === undefined ? (
+              <View>
+                <Text>Calculating...</Text>
+              </View>
+            ) : (
+              <View></View>
+            )}
+            <View style={{ marginTop: 20 }}>
               <Text style={styles.heartRateTitleText}>
                 Your Systolic Pressure Is:
               </Text>
-              <Text style={styles.heartRateTitleText}>{systolic} mmHg</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.heartRateTitleText}>{systolic}</Text>
+                <Text style={styles.abbrText}>mmHg</Text>
+              </View>
             </View>
-            <View>
+            <View style={{ marginTop: 20 }}>
               <Text style={styles.heartRateTitleText}>
                 Your Diastolic Pressure Is:
               </Text>
-              <Text style={styles.heartRateTitleText}>{diastolic} mmHg</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.heartRateTitleText}>{diastolic}</Text>
+                <Text style={styles.abbrText}>mmHg</Text>
+              </View>
             </View>
-            <View>
+            <View style={{ marginTop: 20, marginBottom: 40 }}>
               <Text style={styles.heartRateTitleText}>Your Heart Rate Is:</Text>
-              <Text style={styles.heartRateTitleText}>{heartRate} bpm</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.heartRateTitleText}>{heartRate}</Text>
+                <Text style={styles.abbrText}>bpm</Text>
+              </View>
             </View>
           </>
         ) : (
@@ -95,12 +129,17 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     color: "black",
   },
   heartRateText: {
     fontSize: 25,
     marginTop: 15,
+  },
+  abbrText: {
+    fontSize: 20,
+    marginTop: 5,
+    fontWeight: "bold",
   },
   ctaButton: {
     backgroundColor: "#FF6060",
@@ -108,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 50,
     marginHorizontal: 20,
-    marginBottom: 5,
+    marginBottom: 20,
     borderRadius: 8,
   },
   ctaButtonText: {
