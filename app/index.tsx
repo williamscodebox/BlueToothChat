@@ -38,8 +38,22 @@ export default function Index() {
         {connectedDevice ? (
           <>
             <PulseIndicator />
-            <Text style={styles.heartRateTitleText}>Your Heart Rate Is:</Text>
-            <Text style={styles.heartRateText}>{heartRate} bpm</Text>
+            <View>
+              <Text style={styles.heartRateTitleText}>
+                Your Systolic Pressure Is:
+              </Text>
+              <Text style={styles.heartRateText}>{heartRate} mmHg</Text>
+            </View>
+            <View>
+              <Text style={styles.heartRateTitleText}>
+                Your Diastolic Pressure Is:
+              </Text>
+              <Text style={styles.heartRateText}>{heartRate} mmHg</Text>
+            </View>
+            <View>
+              <Text style={styles.heartRateTitleText}>Your Heart Rate Is:</Text>
+              <Text style={styles.heartRateText}>{heartRate} bpm</Text>
+            </View>
           </>
         ) : (
           <Text style={styles.heartRateTitleText}>

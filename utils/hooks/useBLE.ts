@@ -180,6 +180,12 @@ function useBLE(): BluetoothLowEnergyApi {
     const raw = base64.decode(characteristic.value);
     const buffer = Uint8Array.from(raw, (c) => c.charCodeAt(0));
     console.log("Decoded bytes:", buffer);
+    console.log(
+      "Decoded number:",
+      "SYS" + " " + buffer[6],
+      "DIA" + " " + buffer[8],
+      "PULSE" + " " + buffer[10]
+    );
 
     // Decode base64 into bytes
     const rawData = base64.decode(characteristic.value);
